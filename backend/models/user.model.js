@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs"; // Using bcryptjs to hash passwords
 
 // Define the user schema and the timestamps for the createdAt and updatedAt fields
 const userSchema = new mongoose.Schema({
@@ -9,10 +10,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: function() {
-            // Password is required only if it's not a Google login
-            return !this.googleId;
-        },
+        required: true
     },
     name: { // This will be used like Welcome, Anthony! in the Dashboard
         type: String,
@@ -20,7 +18,7 @@ const userSchema = new mongoose.Schema({
     },
     profileImage: {
         type: String,
-        default: "",
+        default: "https://png.pngtree.com/png-vector/20210604/ourmid/pngtree-gray-avatar-placeholder-png-image_3416697.jpg", // Replace with your default avatar URL
     },
     googleId: {
         type: String, // To store the Google user ID
@@ -33,18 +31,42 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["user", "Pro User", "admin"],
+        enum: ["user", "pro-user", "admin"],
         default: "user",
     },
     subscription: {
-        type: String,
-        enum: ["free", "pro"],
-        default: "free",
+        stripeCustomerId: { type: String, default: null },
+        stripeSubscriptionId: { type: String, default: null },
+        status: { type: String, enum: ["active", "inactive"], default: "inactive" },
+        currentPeriodEnd: { type: Date, default: null },
+        plan: { type: String, enum: ["free", "pro"], default: "free" },
     },
-    resetPasswordToken: String,
-    resetPasswordExpires: Date,
+    resetPasswordToken: { type: String, default: null },
+    resetPasswordExpires: { type: Date, default: null },
 }, { timestamps: true });
 
+// Pre-save middleware to hash password
+userSchema.pre('save', async function(next) {
+    // Only hash the password if it has been modified (or is new)
+    if (!this.isModified('password')) return next();
+
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Method to compare passwords
+userSchema.methods.comparePassword = async function(candidatePassword) {
+    try {
+        return await bcrypt.compare(candidatePassword, this.password);
+    } catch (error) {
+        throw error;
+    }
+};
 
 // Export the user model
-export const User = mongoose.model('User', userSchema);
+export const User = mongoose.model("User", userSchema);
