@@ -1,8 +1,31 @@
-<<<<<<< HEAD
 # PRJ666_NAA_Group7
-=======
-# Core Health AI 
-### Will using cloudinary for image storage - the profile and cover images will be stored in the cloudinary storage, and it will return the url of the image. and save it in the mongoose database. then the backend will return the url of the image to the frontend.
+
+The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:4000
+
+## API Documentation
+
+### Authentication Endpoints - Finished
+- POST `/api/auth/signup` - User registration
+- POST `/api/auth/login` - User login
+- POST `/api/auth/google` - Google OAuth
+- POST `/api/auth/requestPasswordReset` - Request password reset
+- POST `/api/auth/resetPassword` - Reset password
+
+### User Endpoints - To Do
+- GET `/api/users/profile` - Get user profile
+- PUT `/api/users/profile` - Update user profile
+- PUT `/api/users/profile/image` - Update profile image
+
+### Subscription Endpoints - To DO
+- POST `/api/subscription/create` - Create subscription
+- GET `/api/subscription/status` - Get subscription status
+- POST `/api/subscription/cancel` - Cancel subscription
+
+### More to do
+
+## Project Structure
 
 # How to run the project
 1. Clone the repository
@@ -12,4 +35,4 @@
 
 * CD to the frontend then `npm install`2. Run `npm run dev` to start the frontend
 
->>>>>>> 0ab4bc1 (Initial Core Health AI Project Set Up)
+
