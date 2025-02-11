@@ -10,7 +10,10 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        // Only require password if googleId is not present
+        required: function() {
+            return !this.googleId;
+        }
     },
     name: { // This will be used like Welcome, Anthony! in the Dashboard
         type: String,
@@ -43,6 +46,42 @@ const userSchema = new mongoose.Schema({
     },
     resetPasswordToken: { type: String, default: null },
     resetPasswordExpires: { type: Date, default: null },
+
+    // User profile information fields
+    fullName: { type: String, default: null},
+    height: { type: Number, default: null},
+    weight: { type: Number, default: null},
+    contactNumber: { type: String, default: null},
+    location: { type: String, default: null},
+    trainingExperience: { type: String, default: null},
+    allergies: { type: [String], default: []},
+    proteinPreference: { type: [String], default: []},
+
+    // User progress fields
+    calories: { type: Number, default: 0},
+    protein: { type: Number, default: 0},
+    water: { type: Number, default: 0},
+    workoutsCompleted: { type: Number, default: 0},
+    streak: { type: Number, default: 0},
+    points: { type: Number, default: 0},
+    restDays: { type: Number, default: 0},
+    lastWorkoutTime: {
+        type: String,
+        default: null
+    },
+    lastWorkoutDate: {
+        type: String,
+        default: null
+    },
+    // Weekly workout Date
+    weeklyWorkouts: {
+        type: Map, // Map of workout types to their completion status
+        of: new mongoose.Schema({ // Schema for each workout type
+            workoutType: String, // Type of workout (e.g., "Cardio", "Strength", "Flexibility")
+            duration: Number, // Duration of the workout in minutes
+        }, { _id: false }), // Disable _id field for each workout type
+        default: {}, // Default value is an empty map
+    }
 }, { timestamps: true });
 
 // Pre-save middleware to hash password
