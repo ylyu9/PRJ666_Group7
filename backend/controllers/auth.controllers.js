@@ -5,6 +5,7 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "../db/sendEmail.js";
 import dotenv from "dotenv";
+import { checkProfileCompletion } from "../utils/checkProfileCompletion.js";
 
 dotenv.config();
 
@@ -33,6 +34,9 @@ export const signup = async (req, res) => {
             },
         });
 
+        // Check if the profile is complete
+        const isProfileComplete = checkProfileCompletion(user);
+
         // Create token
         const token = jwt.sign(
             { userId: user._id },
@@ -44,7 +48,7 @@ export const signup = async (req, res) => {
         const userResponse = user.toObject();
         delete userResponse.password;
 
-        res.status(201).json({ token, user: userResponse });
+        res.status(201).json({ token, user: userResponse, profileComplete: isProfileComplete });
     } catch (error) {
         console.error("Signup Error:", error);
         res.status(500).json({ error: "Error creating user" });
@@ -77,6 +81,13 @@ export const login = async (req, res) => {
         user.lastLogin = new Date();
         await user.save();
 
+        // Check if the profile is complete
+        // If the user has not completed the profile, then the profileComplete will be false
+        // If the user has completed the profile, then the profileComplete will be true
+        // The profile is complete if the user has filled in all the required fields
+        // It will show a banner on the frontend to inform the user to complete the profile
+        const isProfileComplete = checkProfileCompletion(user);
+
         // Create token
         const token = jwt.sign(
             { userId: user._id },
@@ -88,7 +99,8 @@ export const login = async (req, res) => {
         const userResponse = user.toObject();
         delete userResponse.password;
 
-        res.status(200).json({ token, user: userResponse });
+        // Send the token, user, and profile completion status to the frontend
+        res.status(200).json({ token, user: userResponse, profileComplete: isProfileComplete });
     } catch (error) {
         console.error("Login Error:", error);
         res.status(500).json({ error: "Error logging in" });
@@ -122,30 +134,34 @@ export const googleAuth = async (req, res) => {
         });
 
         const payload = ticket.getPayload();
-        const { email, name, picture, sub } = payload;
+        const { email, name, picture, sub: googleId } = payload;
 
         let user = await User.findOne({ email });
 
         if (!user) {
+            // Create new user without password for Google auth
             user = new User({
                 email,
                 name,
                 profileImage: picture,
-                googleId: sub,
+                googleId,
                 subscription: { plan: "free", status: "inactive" },
+                // Don't set password for Google users
             });
             await user.save();
         } else {
             user.lastLogin = new Date();
-
-            // Only update the profile image if not manually updated
+            
             if (!user.profileImage || user.profileImage === user.googleId) {
                 user.profileImage = picture;
             }
-
-            user.googleId = sub;
+            
+            user.googleId = googleId;
             await user.save();
         }
+
+        // Check if the user profile is complete
+        const isProfileComplete = checkProfileCompletion(user);
 
         const jwtToken = jwt.sign(
             { userId: user._id },
@@ -153,8 +169,7 @@ export const googleAuth = async (req, res) => {
             { expiresIn: "1h" }
         );
 
-        user.password = undefined;
-        res.status(200).json({ token: jwtToken, user });
+        res.status(200).json({ token: jwtToken, user, profileComplete: isProfileComplete });
     } catch (error) {
         console.error("Google Auth Error:", error);
         res.status(500).json({ error: "Google authentication failed" });
