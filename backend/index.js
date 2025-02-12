@@ -6,6 +6,7 @@ import authRouter from "./routes/auth.route.js";
 import profileRouter from "./routes/profile.route.js";
 import aiRoutes from './routes/ai.routes.js';
 import userStatsRoutes from './routes/userStats.route.js';
+import publicRouter from './routes/public.route.js';
 
 dotenv.config(); // Load environment variables
 
@@ -30,7 +31,7 @@ app.use("/api/auth", authRouter); // Auth routes
 app.use("/api/profile", profileRouter); // Profile routes
 app.use('/api/ai', aiRoutes);   // AI routes
 app.use('/api/user', userStatsRoutes); // User stats routes
-
+app.use('/api/public', publicRouter);
 
 // Start server
 const PORT = process.env.PORT || 4000;
