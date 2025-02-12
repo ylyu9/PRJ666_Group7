@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "../../components/DashboardLayout";
 import { withAuth } from "../../middleware/authMiddleware";
 import Image from "next/image";
+import dotenv from "dotenv";
+dotenv.config();
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -39,7 +43,7 @@ function Profile() {
     const fetchUserProfile = async () => {
       try {
         const response = await fetch(
-          "http://localhost:4000/api/profile/getUserProfile",
+          `${apiUrl}/api/profile/getUserProfile`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -67,7 +71,7 @@ function Profile() {
 
           // Check profile completion status
           const completionResponse = await fetch(
-            "http://localhost:4000/api/profile/checkProfileCompletion",
+            `${apiUrl}/api/profile/checkProfileCompletion`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -107,7 +111,7 @@ function Profile() {
 
       try {
         const response = await fetch(
-          "http://localhost:4000/api/profile/uploadProfileImage",
+          `${apiUrl}/api/profile/uploadProfileImage`,
           {
             method: "POST",
             body: formData,
@@ -253,7 +257,7 @@ function Profile() {
     setIsSaving(true);
     try {
       const response = await fetch(
-        "http://localhost:4000/api/profile/updatePersonalInfo",
+        `${apiUrl}/api/profile/updatePersonalInfo`,
         {
           method: "PUT",
           headers: {
@@ -271,7 +275,7 @@ function Profile() {
 
       // Fetch fresh profile data after update
       const profileResponse = await fetch(
-        "http://localhost:4000/api/profile/getUserProfile",
+        `${apiUrl}/api/profile/getUserProfile`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

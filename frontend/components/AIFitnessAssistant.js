@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import dotenv from "dotenv";
 
 export default function AIFitnessAssistant() {
   const [chatMessages, setChatMessages] = useState([]);
@@ -7,6 +8,12 @@ export default function AIFitnessAssistant() {
   const [userProfile, setUserProfile] = useState(null);
   const [userStats, setUserStats] = useState(null);
   const chatContainerRef = useRef(null);
+  
+  // Load the environment variables
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  // Load the environment using dotenv
+  dotenv.config();
 
   // Fetch user profile and stats on component mount
   useEffect(() => {
@@ -23,19 +30,19 @@ export default function AIFitnessAssistant() {
           weeklyWorkoutsResponse,
           restDaysResponse,
         ] = await Promise.all([
-          fetch("http://localhost:4000/api/profile/getUserProfile", {
+          fetch(`${apiUrl}/api/profile/getUserProfile`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("http://localhost:4000/api/user/stats", {
+          fetch(`${apiUrl}/api/user/stats`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("http://localhost:4000/api/user/last-workout", {
+          fetch(`${apiUrl}/api/user/last-workout`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("http://localhost:4000/api/user/weekly-workouts", {
+          fetch(`${apiUrl}/api/user/weekly-workouts`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("http://localhost:4000/api/user/rest-days", {
+          fetch(`${apiUrl}/api/user/rest-days`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -156,7 +163,7 @@ I can help you with workouts, nutrition advice, and tracking your progress. What
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No authentication token found");
 
-      const response = await fetch("http://localhost:4000/api/ai/chat", {
+      const response = await fetch(`${apiUrl}/api/ai/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

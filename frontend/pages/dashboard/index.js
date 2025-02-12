@@ -4,6 +4,10 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import AIFitnessAssistant from "../../components/AIFitnessAssistant";
+import dotenv from "dotenv";
+dotenv.config();
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 // Update the useCountAnimation hook to include delay
 const useCountAnimation = (
@@ -206,7 +210,7 @@ function Dashboard() {
 
         try {
           const response = await fetch(
-            "http://localhost:4000/api/profile/getUserProfile",
+            `${apiUrl}/api/profile/getUserProfile`,
             {
               method: "GET",
               headers: {
@@ -236,7 +240,7 @@ function Dashboard() {
 
             // Profile completion check
             const completionResponse = await fetch(
-              "http://localhost:4000/api/profile/checkProfileCompletion",
+              `${apiUrl}/api/profile/checkProfileCompletion`,
               {
                 method: "GET",
                 headers: {
@@ -292,7 +296,7 @@ function Dashboard() {
           .split("T")[0];
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/user/weekly-workouts?start=${startDate}&end=${endDate}`,
+          `${apiUrl}/api/user/weekly-workouts?start=${startDate}&end=${endDate}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -323,7 +327,7 @@ function Dashboard() {
         if (!token) return;
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/user/last-workout`,
+          `${apiUrl}/api/user/last-workout`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -359,7 +363,7 @@ function Dashboard() {
         if (!token) return;
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/user/stats`,
+          `${apiUrl}/api/user/stats`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

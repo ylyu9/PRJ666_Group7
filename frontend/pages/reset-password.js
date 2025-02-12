@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import dotenv from "dotenv";
+dotenv.config();
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ResetPassword() {
   const router = useRouter();
@@ -69,7 +72,7 @@ export default function ResetPassword() {
     setLoading(true);
     try {
       const response = await fetch(
-        "http://localhost:4000/api/auth/resetPassword",
+        `${apiUrl}/api/auth/resetPassword`,
         {
           method: "POST",
           headers: {

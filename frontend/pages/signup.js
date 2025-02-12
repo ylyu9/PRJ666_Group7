@@ -3,6 +3,9 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { GoogleLogin } from "@react-oauth/google";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import dotenv from "dotenv";
+dotenv.config();
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Signup() {
   const router = useRouter();
@@ -136,7 +139,7 @@ export default function Signup() {
     setLoading(true);
     try {
       const { confirmPassword, ...submitData } = formData; // Remove confirmPassword from submission
-      const res = await fetch("http://localhost:4000/api/auth/signup", {
+      const res = await fetch(`${apiUrl}/api/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -164,7 +167,7 @@ export default function Signup() {
   const handleGoogleSuccess = async (credentialResponse) => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:4000/api/auth/googleAuth", {
+      const res = await fetch(`${apiUrl}/api/auth/googleAuth`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,4 +1,7 @@
 import { useState } from "react";
+import dotenv from "dotenv";
+dotenv.config();
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -43,7 +46,7 @@ export default function ForgotPassword() {
     setLoading(true);
     try {
       const response = await fetch(
-        "http://localhost:4000/api/auth/requestPasswordReset",
+        `${apiUrl}/api/auth/requestPasswordReset`,
         {
           method: "POST",
           headers: {

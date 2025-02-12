@@ -8,6 +8,9 @@ import {
   ShieldCheckIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
+import dotenv from "dotenv";
+dotenv.config();
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 function Settings() {
   const [user, setUser] = useState(null);
@@ -48,7 +51,7 @@ function Settings() {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const response = await fetch("http://localhost:4000/api/profile/getUserProfile", {
+        const response = await fetch(`${apiUrl}/api/profile/getUserProfile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
