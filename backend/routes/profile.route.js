@@ -1,11 +1,24 @@
 import express from "express";
 import { uploadProfileImage, updatePersonalInfo, getUserProfile, checkProfileCompletionController } from "../controllers/profile.controllers.js"; // Import the uploadProfileImage controller
 import { protect } from "../middleware/authMiddleware.js"; // Import protect middleware
+import multer from "multer";
 
 const router = express.Router();
 
+const upload = multer({
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB
+  },
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.match(/^image\/(jpg|jpeg|png|gif)$/)) {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+  }
+});
+
 // Route for uploading profile images
-router.post("/uploadProfileImage", protect, uploadProfileImage); // The endpoint for uploading profile images is localhost:4000/api/profile/uploadProfileImage
+router.post("/uploadProfileImage", protect, upload.single("profileImage"), uploadProfileImage); // The endpoint for uploading profile images is localhost:4000/api/profile/uploadProfileImage
 
 // Route for updating user profile
 router.put("/updatePersonalInfo", protect, updatePersonalInfo); // The endpoint for updating user profile is localhost:4000/api/profile/updatePersonalInfo
